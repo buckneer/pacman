@@ -6,6 +6,7 @@ from player import Player
 from enemies import *
 import tkinter
 from tkinter import messagebox
+import random
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 576
@@ -27,7 +28,7 @@ class Game(object):
 
         self.font = pygame.font.Font(None, 35)
 
-        self.menu = Menu(("Start", "About", "Exit"), font_color=WHITE, font_size=60)
+        self.menu = Menu((""), font_color=WHITE, font_size=60)
 
         self.player = Player(32, 128, "player.png")
 
@@ -65,17 +66,11 @@ class Game(object):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
-            self.menu.event_handler(event)
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    if self.game_over and not self.about:
-                        if self.menu.state == 0:
-                            self.__init__()
-                            self.game_over = False
-                        elif self.menu.state == 1:
-                            self.about = True
-                        elif self.menu.state == 2:
-                            return True
+                if event.key == pygame.K_SPACE:
+                    if self.game_over:
+                        self.__init__()
+                        self.game_over = False
 
                 elif event.key == pygame.K_RIGHT:
                     self.player.move_right()
@@ -105,7 +100,6 @@ class Game(object):
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.player.explosion = True
-
         return False
 
     def run_logic(self):
@@ -126,18 +120,14 @@ class Game(object):
             self.enemies.update(self.horizontal_blocks, self.vertical_blocks)
 
     def display_frame(self, screen):
-
-        screen.fill(BLACK)
+        cover_image = pygame.image.load('cover.jpeg')
+        screen.blit(cover_image, (0, 0))
 
         if self.game_over:
-            if self.about:
-                # TODO promeni ovde!!!
-                self.display_message(screen, "It is an arcade game made by: ")
+            self.menu.display_frame(screen)
 
-            else:
-                self.menu.display_frame(screen)
         else:
-
+            screen.fill(BLACK)
             self.horizontal_blocks.draw(screen)
             self.vertical_blocks.draw(screen)
             draw_enviroment(screen)
@@ -153,17 +143,6 @@ class Game(object):
 
         pygame.display.flip()
 
-    def display_message(self, screen, message, color=(255, 0, 0)):
-        label = self.font.render(message, True, color)
-
-        width = label.get_width()
-        height = label.get_height()
-
-        posX = (SCREEN_WIDTH / 2) - (width / 2)
-        posY = (SCREEN_HEIGHT / 2) - (height / 2)
-
-        screen.blit(label, (posX, posY))
-
 
 class Menu(object):
     state = 0
@@ -175,27 +154,15 @@ class Menu(object):
         self.font = pygame.font.Font(ttf_font, font_size)
 
     def display_frame(self, screen):
-        for index, item in enumerate(self.items):
-            if self.state == index:
-                label = self.font.render(item, True, self.select_color)
-            else:
-                label = self.font.render(item, True, self.font_color)
+        label = self.font.render(self.items, True, self.select_color)
+        width = label.get_width()
+        height = label.get_height()
 
-            width = label.get_width()
-            height = label.get_height()
+        posX = (SCREEN_WIDTH / 2) - (width / 2)
 
-            posX = (SCREEN_WIDTH / 2) - (width / 2)
+        t_h = len(self.items) * height
+        posY = (SCREEN_HEIGHT / 2) - (t_h / 2) + height
 
-            t_h = len(self.items) * height
-            posY = (SCREEN_HEIGHT / 2) - (t_h / 2) + (index * height)
+        screen.blit(label, (posX, posY))
 
-            screen.blit(label, (posX, posY))
 
-    def event_handler(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                if self.state > 0:
-                    self.state -= 1
-            elif event.key == pygame.K_DOWN:
-                if self.state < len(self.items) - 1:
-                    self.state += 1

@@ -71,25 +71,34 @@ class Player(pygame.sprite.Sprite):
 
     def move_right(self):
         self.change_x = 3
+        print("Move right")
 
     def move_left(self):
         self.change_x = -3
+        print("Move left")
 
     def move_up(self):
         self.change_y = -3
+        print("Move up")
 
     def move_down(self):
         self.change_y = 3
+        print("Move down")
 
     def stop_move_right(self):
         if self.change_x != 0:
             self.image = self.player_image
+            print("X is not 0")
         self.change_x = 0
+        print("x is 0")
 
     def stop_move_left(self):
         if self.change_x != 0:
             self.image = pygame.transform.flip(self.player_image, True, False)
+            print("y is not zero")
         self.change_x = 0
+        print("y is zero")
+
 
     def stop_move_up(self):
         if self.change_y != 0:
